@@ -37,15 +37,14 @@ module.exports = {
 			if (incidentsLengthState != incidents.length) {
 				// Only send the incident report ONCE, unless new incidents are added / removed.
 				incidentsLengthState = incidents.length;
-				//sendIncidents(users, incidents);
+				sendIncidents(users, incidents);
 			}
 
 			let meanAPIResponseTime = await getAPIMeanResponseTime();
-			meanAPIResponseTime = 200;
+			console.log("Mean response time: ", meanAPIResponseTime);
 			if (meanAPIResponseTime > 125 && !APITimeMessageSent) {
 				sendAPITime(users, meanAPIResponseTime);
 				APITimeMessageSent = true; // Only send the message if it has not been sent in the past ex: 10 mins (prevents spamming)
-				console.log("message sent: ", true);
 			}
 		}, 30 * 1000); // 30 seconds
 
