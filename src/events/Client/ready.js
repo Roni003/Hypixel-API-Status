@@ -41,7 +41,7 @@ module.exports = {
 			}
 
 			let meanAPIResponseTime = await getAPIMeanResponseTime();
-			console.log("Mean response time: ", meanAPIResponseTime);
+			//console.log("Mean response time: ", meanAPIResponseTime);
 			if (meanAPIResponseTime > 125 && !APITimeMessageSent) {
 				sendAPITime(users, meanAPIResponseTime);
 				APITimeMessageSent = true; // Only send the message if it has not been sent in the past ex: 10 mins (prevents spamming)
