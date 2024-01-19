@@ -49,6 +49,7 @@ module.exports = {
 						: "No responses with delay more than 300ms"
 				}`
 			);
+
 			if (highTimes.length > 25 && !APITimeMessageSent) {
 				// Only send message if there are at least 25 responses with over 500ms delay
 				let highestResponseTime = Math.max(...highTimes);
@@ -56,7 +57,7 @@ module.exports = {
 				sendAPITime(users, highestResponseTime);
 				APITimeMessageSent = true; // Only send the message if it has not been sent in the past ex: 10 mins (prevents spamming)
 			}
-		}, 5 * 1000); // 30 seconds
+		}, 30 * 1000); // 30 seconds
 
 		setInterval(async () => {
 			APITimeMessageSent = false;
