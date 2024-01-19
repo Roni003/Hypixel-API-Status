@@ -6,7 +6,7 @@ const {
 	getIncidents,
 	sendMessage,
 	sendIncidents,
-	getAPIMeanResponseTime,
+	getAPIResponseTimes,
 	sendAPITime,
 } = require("../../functions");
 
@@ -38,15 +38,25 @@ module.exports = {
 				// Only send the incident report ONCE, unless new incidents are added / removed.
 				incidentsLengthState = incidents.length;
 				sendIncidents(users, incidents);
+				console.log("New number of incidents: ", incidents.length);
 			}
 
-			let meanAPIResponseTime = await getAPIMeanResponseTime();
-			//console.log("Mean response time: ", meanAPIResponseTime);
-			if (meanAPIResponseTime > 125 && !APITimeMessageSent) {
-				sendAPITime(users, meanAPIResponseTime);
+			let { time, highTimes } = await getAPIResponseTimes();
+			console.log(
+				`[${new Date(time)}] Highest response times: ${
+					highTimes.length > 0
+						? highTimes
+						: "No responses with delay more than 300ms"
+				}`
+			);
+			if (highTimes.length > 25 && !APITimeMessageSent) {
+				// Only send message if there are at least 25 responses with over 500ms delay
+				let highestResponseTime = Math.max(...highTimes);
+				console.log("Highest time: ", highestResponseTime);
+				sendAPITime(users, highestResponseTime);
 				APITimeMessageSent = true; // Only send the message if it has not been sent in the past ex: 10 mins (prevents spamming)
 			}
-		}, 30 * 1000); // 30 seconds
+		}, 5 * 1000); // 30 seconds
 
 		setInterval(async () => {
 			APITimeMessageSent = false;

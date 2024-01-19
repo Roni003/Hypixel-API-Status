@@ -1,12 +1,18 @@
 const chalk = require("chalk");
 const { EmbedBuilder } = require("discord.js");
 
-async function getAPIMeanResponseTime() {
+async function getAPIResponseTimes() {
 	const url =
 		"https://status.hypixel.net/metrics-display/qtxd0x1427g5/day.json";
 	return await fetch(url)
 		.then((res) => res.json())
-		.then((data) => data.summary.mean);
+		.then((data) => {
+			let time = data.metrics[0].metric.most_recent_data_at;
+			let highTimes = data.metrics[0].data
+				.map((APIresponse) => APIresponse.value)
+				.filter((time) => time > 500);
+			return { time, highTimes };
+		});
 }
 
 function sendAPITime(users, mean) {
@@ -15,7 +21,7 @@ function sendAPITime(users, mean) {
 			new EmbedBuilder()
 				.setColor("Red")
 				.setTitle(
-					"The Hypixel API Is Lagging\nAverage Response Time: " +
+					"The Hypixel API Is Lagging\nHighest Response Time: " +
 						mean.toString()
 				),
 		],
@@ -49,6 +55,7 @@ async function getIncidents() {
 				if (element.components && element.components.length > 0) {
 					inc.status = element.components[0].status;
 				}
+				console.log("Active incident: ", inc.name);
 				incidents.push(inc);
 			});
 			return incidents;
@@ -114,6 +121,6 @@ module.exports = {
 	getIncidents,
 	sendMessage,
 	sendIncidents,
-	getAPIMeanResponseTime,
+	getAPIResponseTimes,
 	sendAPITime,
 };
